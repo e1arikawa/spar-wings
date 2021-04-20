@@ -30,12 +30,22 @@ import org.slf4j.MDC;
  * MDC の情報を request scope から設定する Filter.
  * 
  * <p>
+ * 経緯は以下の通り
+ * 1. Springでコントローラーから例外をスローすると2週目のフィルターチェーンが動く
+ * 2. FilterでMDCを操作する際にdoFilterの後MDCをクリアすると、2週目のフィルターチェーンでMDCがクリアされている、という状況になる
+ * 3. 1リクエストに対して1回だけMDCに何かを登録したい場合、OncePerRequestFilterで一度だけMDCにを操作したい
+ *   - つまり、1つのトランザクションに対して1度だけMDCを操作したい場合、同じトランザクションの2回目以降のフィルターチェーンでもMDCを参照したい
+ * 4. 初回のフィルターチェーンでMDCをリクエストスコープにコピー &amp; 2回目以降のフィルターチェーンで
+ *    リクエストスコープにコピーしたMDCをThreadLocalのMDCにセットすることで、
+ *    1回目に組み立てたMDCを2回目以降のフィルターチェーンでも使い回せるようにする
+ * 
  * 本 Filter は、LogbookFilter の直前に登録する必要があります。
+ * DispatcherType には REQUEST, ASYNC, ERROR を含めてください。
  * </p>
  */
 public class MDCInsertingForRequestServletFilter implements Filter {
 	
-	private static final String STORED_MDC_KEY =
+	static final String STORED_MDC_KEY =
 			MDCInsertingForRequestServletFilter.class.getName() + "_STORED_MDC_KEY";
 	
 	
