@@ -24,7 +24,7 @@ import java.util.Arrays;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

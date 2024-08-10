@@ -17,15 +17,15 @@ package jp.xet.sparwings.dynamodb.patch;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.junit.AssumptionViolatedException;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -63,7 +63,7 @@ public class JsonPatchToExpressionSpecBuilderRemoveIT {
 	private Table table;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		try {
 			AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClient.builder()
@@ -71,8 +71,8 @@ public class JsonPatchToExpressionSpecBuilderRemoveIT {
 			table = new Table(amazonDynamoDB, "json_patch_test");
 			table.deleteItem(PK);
 		} catch (AmazonClientException e) {
-			throw new AssumptionViolatedException(null, e);
-		}
+            Assumptions.assumeTrue(false, "DynamoDB操作で例外が発生しました: " + e.getMessage());
+        }
 	}
 	
 	@Test
@@ -148,21 +148,23 @@ public class JsonPatchToExpressionSpecBuilderRemoveIT {
 		assertThat(json, hasJsonPath("$.a", equalTo("b")));
 	}
 	
-	@Test(expected = AmazonServiceException.class)
+	@Test
 	public void test_remove_absentObjectPath() throws Exception {
-		// setup
-		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
-			.put(KEY_ATTRIBUTE_NAME, VALUE)
-			.put("a", "b")
-			.build()));
-		
-		// setup
-		String patchExpression = "[ { \"op\": \"remove\", \"path\": \"/c/d\" } ]"; // $.c does not exist in target
-		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
-		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
-		// exercise
-		ExpressionSpecBuilder actual = sut.apply(jsonPatch);
-		UpdateItemExpressionSpec actualSpec = actual.buildForUpdate();
-		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, actualSpec);
+        assertThrows(AmazonServiceException.class, () -> {
+            // setup
+    		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
+    			.put(KEY_ATTRIBUTE_NAME, VALUE)
+    			.put("a", "b")
+    			.build()));
+    		
+    		// setup
+    		String patchExpression = "[ { \"op\": \"remove\", \"path\": \"/c/d\" } ]"; // $.c does not exist in target
+    		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
+    		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
+    		// exercise
+    		ExpressionSpecBuilder actual = sut.apply(jsonPatch);
+    		UpdateItemExpressionSpec actualSpec = actual.buildForUpdate();
+    		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, actualSpec);
+        });
 	}
 }

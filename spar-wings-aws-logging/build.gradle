@@ -3,8 +3,9 @@
 description "Servlet filter which adds EC2 instance metadata to SLF4J MDC."
 
 dependencies {
-	compileOnly "javax.servlet:javax.servlet-api"
-	compile "org.springframework:spring-web"
-	compile "org.springframework:spring-context"
-	compile project(":spar-wings-aws-essential")
+	compileOnly "jakarta.servlet:jakarta.servlet-api"
+	implementation "org.springframework:spring-web"
+	implementation "org.springframework:spring-context"
+	implementation project(":spar-wings-aws-essential")
+	implementation "com.amazonaws:aws-java-sdk-core:$awsJavaSdkVersion"
 }

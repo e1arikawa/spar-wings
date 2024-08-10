@@ -15,7 +15,7 @@
  */
 package jp.xet.sparwings.spring.web.ratelimiter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * TODO for daiuske

@@ -25,7 +25,7 @@ import java.util.List;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Sort;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for {@link SliceImpl}

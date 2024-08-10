@@ -19,7 +19,6 @@ import static org.hamcrest.Matchers.is;
 
 import java.net.URI;
 
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
 /**
@@ -43,7 +42,6 @@ public class URIMatchers {
 	 * @return The scheme matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasScheme(Matcher<String> matcher) {
 		return new HasSchema(matcher);
 	}
@@ -60,7 +58,6 @@ public class URIMatchers {
 	 * @return The scheme matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasScheme(String scheme) {
 		return new HasSchema(is(scheme));
 	}
@@ -77,7 +74,6 @@ public class URIMatchers {
 	 * @return The authority matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasAuthority(Matcher<String> matcher) {
 		return new HasAuthority(matcher);
 	}
@@ -94,7 +90,6 @@ public class URIMatchers {
 	 * @return The authority matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasAuthority(String authority) {
 		return new HasAuthority(is(authority));
 	}
@@ -111,7 +106,6 @@ public class URIMatchers {
 	 * @return The hostname matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasHost(Matcher<String> matcher) {
 		return new HasHost(matcher);
 	}
@@ -128,7 +122,6 @@ public class URIMatchers {
 	 * @return The hostname matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasHost(String host) {
 		return new HasHost(is(host));
 	}
@@ -145,7 +138,6 @@ public class URIMatchers {
 	 * @return The port number matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasPort(Matcher<Integer> matcher) {
 		return new HasPort(matcher);
 	}
@@ -162,7 +154,6 @@ public class URIMatchers {
 	 * @return The port number matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasPort(int port) {
 		return new HasPort(is(port));
 	}
@@ -179,7 +170,6 @@ public class URIMatchers {
 	 * @return The path matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasPath(Matcher<String> matcher) {
 		return new HasPath(matcher);
 	}
@@ -196,7 +186,6 @@ public class URIMatchers {
 	 * @return The path matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasPath(String path) {
 		return new HasPath(is(path));
 	}
@@ -213,7 +202,6 @@ public class URIMatchers {
 	 * @return The query parameter matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasQueryParam(String key) {
 		return new HasQueryParam(key, null);
 	}
@@ -232,7 +220,6 @@ public class URIMatchers {
 	 * @return The query parameter matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasQueryParam(String key, Matcher<String> matcher) {
 		return new HasQueryParam(key, matcher);
 	}
@@ -249,7 +236,6 @@ public class URIMatchers {
 	 * @return The fragment parameter matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasFragmentParam(String key) {
 		return new HasFragmentParam(key, null);
 	}
@@ -268,7 +254,6 @@ public class URIMatchers {
 	 * @return The fragment parameter matcher
 	 * @since 0.15
 	 */
-	@Factory
 	public static Matcher<URI> hasFragmentParam(String key, Matcher<String> matcher) {
 		return new HasFragmentParam(key, matcher);
 	}

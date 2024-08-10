@@ -17,15 +17,14 @@ package jp.xet.sparwings.spring.web.ratelimiter;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import jp.xet.sparwings.spring.web.httpexceptions.HttpTooManyRequestsException;
 
@@ -35,7 +34,7 @@ import jp.xet.sparwings.spring.web.httpexceptions.HttpTooManyRequestsException;
  * @since 0.8
  * @author daisuke
  */
-public class RateLimitingInterceptor extends HandlerInterceptorAdapter {
+public class RateLimitingInterceptor implements HandlerInterceptor {
 	
 	private static final int DEFAULT_CONSUMPTION = 100;
 	
@@ -62,7 +61,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter {
 		if (rateLimitService != null && isRateLimitTarget(request, response, handler)) {
 			rateLimit(request, response, handler);
 		}
-		return super.preHandle(request, response, handler);
+		return true;
 	}
 	
 	/**

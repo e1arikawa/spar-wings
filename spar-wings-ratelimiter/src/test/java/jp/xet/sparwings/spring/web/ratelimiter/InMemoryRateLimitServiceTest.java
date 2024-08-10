@@ -24,27 +24,25 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.servlet.http.HttpServletRequest;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jp.xet.baseunits.time.TimePoint;
 import jp.xet.baseunits.timeutil.Clock;
 import jp.xet.baseunits.timeutil.FixedTimeSource;
 import jp.xet.baseunits.timeutil.SystemClock;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TODO for daisuke
  */
 @Slf4j
-@RunWith(MockitoJUnitRunner.Silent.class)
+@ExtendWith(MockitoExtension.class)
 public class InMemoryRateLimitServiceTest {
 	
 	@Mock
@@ -53,7 +51,7 @@ public class InMemoryRateLimitServiceTest {
 	InMemoryRateLimitService sut;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		sut = new InMemoryRateLimitService();
 		sut.setRecoveryStrategy(req -> new RateLimitDescriptor("user1", 2, 1000L)
@@ -61,7 +59,7 @@ public class InMemoryRateLimitServiceTest {
 		when(request.getRemoteAddr()).thenReturn("192.0.2.123");
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		Clock.setTimeSource(SystemClock.timeSource());
 		reset(request);

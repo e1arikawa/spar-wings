@@ -3,7 +3,7 @@
 description "Servlet filter implementation which issues request ID for every HTTP request."
 
 dependencies {
-	compileOnly "javax.servlet:javax.servlet-api"
-	compile "org.springframework:spring-web"
-	compile "org.springframework:spring-context"
+	compileOnly "jakarta.servlet:jakarta.servlet-api"
+	implementation "org.springframework:spring-web"
+	implementation "org.springframework:spring-context"
 }

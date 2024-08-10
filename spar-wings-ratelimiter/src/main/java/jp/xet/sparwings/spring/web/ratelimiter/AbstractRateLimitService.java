@@ -17,7 +17,7 @@ package jp.xet.sparwings.spring.web.ratelimiter;
 
 import java.util.function.Function;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.Setter;
 

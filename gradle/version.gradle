@@ -6,20 +6,19 @@ buildscript {
 		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
-		classpath 'org.ajoberstar:grgit:1.7.0'
+		classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.1'
 	}
 }
 
 ext {
-	git = org.ajoberstar.grgit.Grgit.open(file('.'))
+	git = org.ajoberstar.grgit.Grgit.open(dir: file('.'))
 	revision = git.head().abbreviatedId
+	describedCommit = git.describe().toString().trim()
 }
 
-import java.text.SimpleDateFormat
-// LocalDateTime.now().format("yyyyMMdd") は参照できないと言われる...
-version = new SimpleDateFormat('yyyyMMdd').format(new Date()) + "-" + revision +
-	(git.branch.current.name != "master" ? "-SNAPSHOT" : "") +
-	(git.status().isClean() ? "" : "+dirty")
+version = LocalDateTime.now().format("yyyyMMdd") + "-" + revision +
+		(git.branch.current.name != "master" ? "-SNAPSHOT" : "") +
+		(git.status().isClean() ? "" : "+dirty")
 
 if (System.getenv('CIRCLE_TAG') != null) {
 	version = System.getenv('CIRCLE_TAG')
@@ -28,5 +27,11 @@ if (System.getenv('CIRCLE_TAG') != null) {
 task showVersion {
 	doLast {
 		println version
+	}
+}
+
+task describedCommit {
+	doLast {
+		println describedCommit
 	}
 }

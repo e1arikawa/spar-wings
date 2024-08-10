@@ -21,20 +21,20 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import org.junit.Test;
-
+import apple.laf.JRSUIConstants.Direction;
 import jp.xet.sparwings.spring.data.chunk.Chunkable;
 import jp.xet.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
 
@@ -131,17 +131,19 @@ public class ChunkableHandlerMethodArgumentResolverTest {
 		// nothing to do
 	}
 	
-	@Test(expected = IllegalStateException.class)
+	@Test()
 	public void testMultipleChunkable() throws Exception {
-		// setup
-		Method method = getClass().getMethod("multipleChunkable", Chunkable.class, Chunkable.class);
-		MethodParameter methodParametere = new MethodParameter(method, 0);
-		ModelAndViewContainer mavContainer = mock(ModelAndViewContainer.class);
-		NativeWebRequest webRequest = mock(NativeWebRequest.class);
-		WebDataBinderFactory binderFactory = mock(WebDataBinderFactory.class);
-		// exercise
-		sut.resolveArgument(methodParametere, mavContainer, webRequest, binderFactory);
-		// assert exception
+        assertThrows(IllegalStateException.class, () -> {
+    		// setup
+    		Method method = getClass().getMethod("multipleChunkable", Chunkable.class, Chunkable.class);
+    		MethodParameter methodParametere = new MethodParameter(method, 0);
+    		ModelAndViewContainer mavContainer = mock(ModelAndViewContainer.class);
+    		NativeWebRequest webRequest = mock(NativeWebRequest.class);
+    		WebDataBinderFactory binderFactory = mock(WebDataBinderFactory.class);
+    		// exercise
+    		sut.resolveArgument(methodParametere, mavContainer, webRequest, binderFactory);
+    		// assert exception
+        });
 	}
 	
 	@Test

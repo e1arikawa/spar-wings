@@ -19,14 +19,16 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.junit.AssumptionViolatedException;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -66,7 +68,7 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 	private Table table;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		try {
 			AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClient.builder()
@@ -74,7 +76,7 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 			table = new Table(amazonDynamoDB, "json_patch_test");
 			table.deleteItem(PK);
 		} catch (AmazonClientException e) {
-			throw new AssumptionViolatedException(null, e);
+            Assumptions.assumeTrue(false, "DynamoDB操作で例外が発生しました: " + e.getMessage());
 		}
 	}
 	
@@ -156,21 +158,23 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 	/**
 	 * 既存属性の既存スカラに対する属性値の追加要求。
 	 */
-	@Test(expected = AmazonServiceException.class)
+	@Test
 	public void test_replace_property_toScalar_string() throws Exception {
-		// setup
-		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
-			.put(KEY_ATTRIBUTE_NAME, VALUE)
-			.put("a", 1)
-			.build()));
-		
-		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a/b\", \"value\": \"bar\" } ]";
-		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
-		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
-		// exercise
-		ExpressionSpecBuilder builder = sut.apply(jsonPatch);
-		UpdateItemExpressionSpec spec = builder.buildForUpdate();
-		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, spec);
+        assertThrows(AmazonServiceException.class, () -> {
+    		// setup
+    		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
+    			.put(KEY_ATTRIBUTE_NAME, VALUE)
+    			.put("a", 1)
+    			.build()));
+    		
+    		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a/b\", \"value\": \"bar\" } ]";
+    		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
+    		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
+    		// exercise
+    		ExpressionSpecBuilder builder = sut.apply(jsonPatch);
+    		UpdateItemExpressionSpec spec = builder.buildForUpdate();
+    		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, spec);
+        });
 	}
 	
 	@Test

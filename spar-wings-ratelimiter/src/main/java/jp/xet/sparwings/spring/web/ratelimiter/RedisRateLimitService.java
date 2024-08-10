@@ -17,7 +17,7 @@ package jp.xet.sparwings.spring.web.ratelimiter;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

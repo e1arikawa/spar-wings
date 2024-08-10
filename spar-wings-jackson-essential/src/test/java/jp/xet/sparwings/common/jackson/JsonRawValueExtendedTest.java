@@ -23,8 +23,8 @@ import static org.hamcrest.Matchers.is;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,7 +46,7 @@ public class JsonRawValueExtendedTest {
 	private ObjectMapper mapper;
 	
 	
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		mapper = new ObjectMapper();
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);

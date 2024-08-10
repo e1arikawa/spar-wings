@@ -15,7 +15,7 @@
  */
 package jp.xet.sparwings.common.filters;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * TODO for daisuke

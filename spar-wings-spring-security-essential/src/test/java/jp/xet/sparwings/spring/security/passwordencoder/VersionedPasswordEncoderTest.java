@@ -17,8 +17,9 @@ package jp.xet.sparwings.spring.security.passwordencoder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
@@ -27,9 +28,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -55,29 +56,35 @@ public class VersionedPasswordEncoderTest {
 	VersionedPasswordEncoder sut;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		sut = new VersionedPasswordEncoder("foo", "baz", legalMap);
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		sut = null;
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testConstruct_primaryEncoder_notFound() {
-		new VersionedPasswordEncoder("foo", "xxx", legalMap);
+        assertThrows(IllegalArgumentException.class, () -> {    
+            new VersionedPasswordEncoder("foo", "xxx", legalMap);
+        });
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testConstruct_unknownEncoder_notFound() {
-		new VersionedPasswordEncoder("xxx", "bar", legalMap);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new VersionedPasswordEncoder("xxx", "bar", legalMap);
+        });
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testConstruct_keyPattern_doesNotMet() {
-		new VersionedPasswordEncoder("bar", "foo-bar", illegalMap);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new VersionedPasswordEncoder("bar", "foo-bar", illegalMap);
+        });
 	}
 	
 	@Test

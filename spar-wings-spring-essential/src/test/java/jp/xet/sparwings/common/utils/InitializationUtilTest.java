@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;

@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Sort.Direction;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jp.xet.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
 

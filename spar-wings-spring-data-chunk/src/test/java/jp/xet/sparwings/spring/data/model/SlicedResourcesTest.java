@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 
 import org.springframework.data.domain.Sort;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 

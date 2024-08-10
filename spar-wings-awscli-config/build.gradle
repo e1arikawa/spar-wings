@@ -3,5 +3,5 @@
 description "AWS credentials provider implementation to support AWS CLI specific configuration."
 
 dependencies {
-	compile "com.amazonaws:aws-java-sdk-sts:$awsJavaSdkVersion"
+	implementation "com.amazonaws:aws-java-sdk-sts:$awsJavaSdkVersion"
 }

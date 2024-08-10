@@ -1,32 +1,41 @@
 // -*- coding: utf-8; mode: groovy -*-
+import com.github.spotbugs.snom.Effort
 
 buildscript {
 	repositories {
 		mavenCentral()
-		maven { url "http://repo.spring.io/plugins-release" }
+		maven { url "https://repo.spring.io/plugins-release" }
+		maven { url = uri("https://plugins.gradle.org/m2/") }
 	}
 	dependencies {
-		classpath "com.diffplug.spotless:spotless-plugin-gradle:4.5.1"
-		classpath "de.thetaphi:forbiddenapis:3.0"
-		classpath "de.aaschmid:gradle-cpd-plugin:1.0"
-		classpath "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
+		classpath "com.diffplug.spotless:spotless-plugin-gradle:6.25.0"
+		classpath "de.thetaphi:forbiddenapis:3.7"
+		classpath "de.aaschmid:gradle-cpd-plugin:3.2"
+		classpath "io.spring.gradle:dependency-management-plugin:1.1.6"
 		classpath "jp.classmethod.aws:gradle-aws-plugin:0.41"
 	}
 }
 
 plugins {
-	id "com.jfrog.bintray" version "1.8.5"
+	//id "com.jfrog.bintray" version "1.8.5"//no use
+    id 'com.diffplug.spotless' version '6.11.0'
+    id 'com.github.spotbugs' version '6.0.19'
+    id 'de.aaschmid.cpd' version '3.4'
+    id 'de.thetaphi.forbiddenapis' version '3.7'
 }
 
 // custom configuration
 apply from: 'gradle/version.gradle'
 apply from: 'gradle/resolveDependencies.gradle'
-bintrayUpload.enabled = false
+// bintrayUpload.enabled = false //no use
 
 ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
 
 defaultTasks "clean", "build"
 
+ext {
+    momockitoVersion = project.findProperty('mockito.version') ?: '1.0.0'
+}
 
 allprojects {
 	repositories {
@@ -35,14 +44,16 @@ allprojects {
 	group = "jp.xet.${githubProjectName}"
 	version = rootProject.version
 }
+
 description "Support library for Spring framework, AWS Java SDK and the others."
 
 subprojects {
-	apply plugin: "java"
+	apply plugin: 'java'
+	apply plugin: 'java-library'
+    apply plugin: 'groovy'
 	apply plugin: "io.spring.dependency-management"
-	apply plugin: "maven"
 	apply plugin: "maven-publish"
-	apply plugin: "com.jfrog.bintray"
+	//apply plugin: "com.jfrog.bintray"//no use
 
 	dependencyManagement {
 		imports {
@@ -50,20 +61,47 @@ subprojects {
 		}
 	}
 	
-	sourceCompatibility = targetCompatibility = 1.8
-	
-	// ======== code quality ========
-	apply plugin: "checkstyle"
-	apply plugin: "findbugs"
-	apply plugin: "pmd"
-	apply plugin: "cpd"
-	apply plugin: "jacoco"
-	apply plugin: "de.thetaphi.forbiddenapis"
-	apply plugin: "com.diffplug.gradle.spotless"
+	java {
+		sourceCompatibility = JavaVersion.VERSION_21
+		targetCompatibility = JavaVersion.VERSION_21
+	}
 
+	// ======== code quality ========
+    apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.diffplug.spotless'
+    apply plugin: 'com.github.spotbugs'
+    apply plugin: 'de.aaschmid.cpd'
+    apply plugin: 'de.thetaphi.forbiddenapis'
+    apply plugin: 'jp.classmethod.aws'
+	
 	// code quality configuration
 	apply from: "${rootProject.projectDir}/gradle/quality/checkstyle.gradle"
-	apply from: "${rootProject.projectDir}/gradle/quality/findbugs.gradle"
+	//apply from: "${rootProject.projectDir}/gradle/quality/findbugs.gradle" //no use for import
+	
+	spotbugs {
+		toolVersion = "6.0.19"
+		effort = Effort.valueOf('MAX')
+		ignoreFailures = true
+	}
+
+	tasks.spotbugsMain {
+		reports {
+			xml.required.set(false)
+			html.required.set(true)
+		}
+		excludeFilter = file("${rootProject.projectDir}/config/spotbugs/excludeFilter.xml")
+	}
+
+	tasks.spotbugsTest {
+		reports {
+			xml.required.set(false)
+			html.required.set(true)
+		}
+		excludeFilter = file("${rootProject.projectDir}/config/spotbugs/excludeFilter-test.xml")
+	}
+
 	apply from: "${rootProject.projectDir}/gradle/quality/pmd.gradle"
 	apply from: "${rootProject.projectDir}/gradle/quality/cpd.gradle"
 	apply from: "${rootProject.projectDir}/gradle/quality/jacoco.gradle"
@@ -71,13 +109,15 @@ subprojects {
 	apply from: "${rootProject.projectDir}/gradle/quality/spotless.gradle"
 	
 	apply from: "${rootProject.projectDir}/gradle/sourceArtifact.gradle"
-	apply from: "${rootProject.projectDir}/gradle/bintray.gradle"
+	// apply from: "${rootProject.projectDir}/gradle/bintray.gradle" //no use
 	
 	// compiler
 	tasks.withType(AbstractCompile) each {
 		it.options.encoding = "UTF-8"
 	}
-	compileJava {
+
+	tasks.withType(JavaCompile) {
+		options.encoding = 'UTF-8'
 		options.compilerArgs << "-Xlint"
 	}
 	
@@ -86,54 +126,73 @@ subprojects {
 		testCompile.extendsFrom compileOnly
 	}
 
+	test {
+		jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+		useJUnitPlatform()
+		testLogging {
+			events "passed", "skipped", "failed"
+			exceptionFormat "full"
+		}
+	}
+    
+    jar {
+        enabled = true
+    }
+
+    tasks.jar {
+        manifest {
+            attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Built-Date': new Date().format('yyyy-MM-dd'),
+                'Built-JDK': System.getProperty('java.version'),
+                'Built-Gradle': gradle.gradleVersion,
+                'Target-JDK': project.targetCompatibility
+            )
+        }
+    }
+
+	tasks.withType(Test) {
+		useJUnitPlatform()
+	}
+
+	tasks.withType(Javadoc) {
+		failOnError = false
+	}
+
 	repositories {
 		mavenCentral()
-		maven { url "http://maven.classmethod.info/snapshot" } // for baseunits
-		maven { url "http://maven.classmethod.info/release" } // for baseunits
+		maven { url "https://maven.classmethod.info/snapshot" } // for baseunits
+		maven { url "https://maven.classmethod.info/release" } // for baseunits
 	}
 	
 	dependencies {
-		compile "org.slf4j:slf4j-api"
+		implementation "org.slf4j:slf4j-api:$slf4jVersion"
 		compileOnly "org.projectlombok:lombok:$lombokVersion"
-		testCompile "org.slf4j:jul-to-slf4j"
-		testCompile "org.slf4j:jcl-over-slf4j"
-		testCompile "ch.qos.logback:logback-classic"
-		testCompile "junit:junit:$junitVersion"
-		testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
-		testCompile "org.mockito:mockito-core"
+    	annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+		testImplementation "org.slf4j:jul-to-slf4j"
+		testImplementation "org.slf4j:jcl-over-slf4j"
+		testImplementation "ch.qos.logback:logback-classic"
+		testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+		testImplementation "org.hamcrest:hamcrest:$hamcrestVersion"
+    	testImplementation "org.mockito:mockito-core:$momockitoVersion"
+    	testImplementation "org.mockito:mockito-junit-jupiter:$momockitoVersion"
 	}
 	
-	apply plugin: "jp.classmethod.aws"
-	aws {
-		profileName = null
-	}
+	//apply plugin: "jp.classmethod.aws"
+	//aws {
+	//	profileName = null
+	//}
 	
 	// ======== Publishing =======
 	publishing {
-		repositories {
-			maven {
-				def releasesRepoUrl = "${System.getenv("PUBLISH_REPOSITORY")}/release"
-				def snapshotsRepoUrl = "${System.getenv("PUBLISH_REPOSITORY")}/snapshot"
-				url version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
-
-				credentials(AwsCredentials) {
-					def profileName = project.hasProperty("awsProfileForMetropolisRepo") ? project.awsProfileForMetropolisRepo : null
-					def cred = aws.newCredentialsProvider(profileName).credentials
-					accessKey cred.getAWSAccessKeyId()
-					secretKey cred.getAWSSecretKey()
-				}
-			}
-		}
-
 		publications {
 			mavenJava(MavenPublication) {
 				from components.java
-				artifact sourcesJar {
-					classifier "sources"
-				}
-				artifact javadocJar {
-					classifier "javadoc"
-				}
+				artifact tasks.sourcesJar
+				artifact tasks.javadocJar
+
 				pom.withXml {
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
@@ -142,19 +201,37 @@ subprojects {
 						inceptionYear "2015"
 						licenses {
 							license {
-								name "The Apache Software License, Version 2.0"
+							name "The Apache Software License, Version 2.0"
 								url "http://www.apache.org/license/LICENSE-2.0.txt"
 								distribution "repo"
 							}
 						}
 					}
 				}
+ 			}
+		}
+
+		repositories {
+			maven {
+				def releasesRepoUrl = "${System.getenv("PUBLISH_REPOSITORY")}/release"
+				def snapshotsRepoUrl = "${System.getenv("PUBLISH_REPOSITORY")}/snapshot"
+				url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+
+	//            credentials(AwsCredentials) {
+	//                def profileName = project.hasProperty("awsProfileForMetropolisRepo") ? project.awsProfileForMetropolisRepo : null
+	//                def cred = aws.newCredentialsProvider(profileName).credentials
+	//                accessKey cred.getAWSAccessKeyId()
+	//                secretKey cred.getAWSSecretKey()
+	//            }
 			}
+
+			mavenLocal()
 		}
 	}
 }
 
 // ======== wrapper ========
 wrapper {
-	gradleVersion = 4.8
+	gradleVersion = '8.9'
+	distributionType = Wrapper.DistributionType.ALL
 }

@@ -3,15 +3,16 @@
 description "Spring data support library to enable Chunk (like Page) feature."
 
 dependencies {
-	compile "com.fasterxml.jackson.core:jackson-databind"
-	compile "org.springframework.data:spring-data-commons"
-	compile "org.springframework:spring-web"
-	compile "org.springframework:spring-context"
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation "com.fasterxml.jackson.core:jackson-databind"
+	implementation "org.springframework.data:spring-data-commons"
+	implementation "org.springframework:spring-web"
+	implementation "org.springframework:spring-context"
 	compileOnly "org.springframework:spring-tx"
-	compile project(":spar-wings-httpexceptions")
+	implementation project(":spar-wings-httpexceptions")
 	
-	testCompile "com.fasterxml.jackson.core:jackson-databind"
-	testCompile "com.jayway.jsonpath:json-path-assert:2.4.0"
-	testCompile "org.skyscreamer:jsonassert:1.5.0"
-	testCompile "org.assertj:assertj-core"
+	testImplementation "com.fasterxml.jackson.core:jackson-databind"
+	testImplementation "com.jayway.jsonpath:json-path-assert:2.9.0"
+	testImplementation "org.skyscreamer:jsonassert:1.5.3"
+	testImplementation "org.assertj:assertj-core"
 }

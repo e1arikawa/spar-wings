@@ -20,7 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jp.xet.sparwings.spring.data.slice.SliceRequest;
 import jp.xet.sparwings.spring.data.slice.Sliceable;
@@ -124,20 +125,22 @@ public class SliceableHandlerMethodArgumentResolverTest {
 		// nothing to do
 	}
 	
-	@Test(expected = IllegalStateException.class)
+	@Test()
 	public void testMultipleSliceable() throws Exception {
-		// setup
-		Method method = getClass().getMethod("multipleSliceable", Sliceable.class, Sliceable.class);
-		MethodParameter methodParametere = new MethodParameter(method, 0);
-		ModelAndViewContainer mavContainer = mock(ModelAndViewContainer.class);
-		NativeWebRequest webRequest = mock(NativeWebRequest.class);
-		WebDataBinderFactory binderFactory = mock(WebDataBinderFactory.class);
-		
-		// exercise
-		sut.resolveArgument(methodParametere, mavContainer, webRequest, binderFactory);
-		
-		// assert exception
-		fail();
+        assertThrows(IllegalStateException.class, () -> {
+    		// setup
+    		Method method = getClass().getMethod("multipleSliceable", Sliceable.class, Sliceable.class);
+    		MethodParameter methodParametere = new MethodParameter(method, 0);
+    		ModelAndViewContainer mavContainer = mock(ModelAndViewContainer.class);
+    		NativeWebRequest webRequest = mock(NativeWebRequest.class);
+    		WebDataBinderFactory binderFactory = mock(WebDataBinderFactory.class);
+    		
+    		// exercise
+    		sut.resolveArgument(methodParametere, mavContainer, webRequest, binderFactory);
+    		
+    		// assert exception
+    		fail();
+        });
 	}
 	
 	@Test

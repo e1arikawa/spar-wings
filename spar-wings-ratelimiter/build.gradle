@@ -3,11 +3,11 @@
 description "Support library for Spring MVC to support HTTP request rate limiter."
 
 dependencies {
-	compileOnly "javax.servlet:javax.servlet-api"
-	compile "org.springframework:spring-webmvc"
-	compile "org.springframework.security:spring-security-core"
-	compile "org.springframework.data:spring-data-redis"
-	compile "redis.clients:jedis"
-	compile "jp.xet:baseunits:$baseunitsVersion"
-	compile project(":spar-wings-httpexceptions")
+	compileOnly "jakarta.servlet:jakarta.servlet-api"
+	implementation "org.springframework:spring-webmvc"
+	implementation "org.springframework.security:spring-security-core"
+	implementation "org.springframework.data:spring-data-redis"
+	implementation "redis.clients:jedis"
+	implementation "jp.xet:baseunits:$baseunitsVersion"
+	implementation project(":spar-wings-httpexceptions")
 }
