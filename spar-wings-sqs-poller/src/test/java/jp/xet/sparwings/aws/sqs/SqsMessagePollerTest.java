@@ -29,20 +29,18 @@ import static org.mockito.Mockito.when;
 
 import java.util.function.Consumer;
 
-import org.springframework.retry.support.RetryTemplate;
-import org.springframework.util.DigestUtils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.retry.support.RetryTemplate;
+import org.springframework.util.DigestUtils;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.ChangeMessageVisibilityRequest;
@@ -59,7 +57,7 @@ import com.amazonaws.services.sqs.model.ReceiveMessageResult;
  * @author daisuke
  */
 @SuppressWarnings("javadoc")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SqsMessagePollerTest {
 	
 	private static Logger logger = LoggerFactory.getLogger(SqsMessagePollerTest.class);
@@ -78,7 +76,7 @@ public class SqsMessagePollerTest {
 	SqsMessagePoller sut;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		sut = new SqsMessagePoller(sqs, retry, Q_URL, messageHandler, "testHandler");
 		sut.setVisibilityTimeout(10);

@@ -21,14 +21,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -41,7 +40,7 @@ import com.amazonaws.auth.AWSCredentialsProvider;
  * @author daisuke
  */
 @SuppressWarnings("javadoc")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AwsCliConfigProfileCredentialsProviderTest {
 	
 	private static Logger logger = LoggerFactory.getLogger(AwsCliConfigProfileCredentialsProviderTest.class);
@@ -55,7 +54,7 @@ public class AwsCliConfigProfileCredentialsProviderTest {
 	AwsCliConfigProfileCredentialsProvider sut;
 	
 	
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		when(configFile.getCredentialsProvider(eq("test"))).thenReturn(cp);
 		sut = new AwsCliConfigProfileCredentialsProvider(configFile, "test");

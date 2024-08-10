@@ -23,10 +23,10 @@ import static org.hamcrest.Matchers.is;
 import java.io.File;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -40,13 +40,13 @@ import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
  * @author daisuke
  */
 @SuppressWarnings("javadoc")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AwsCliConfigFileTest {
 	
 	AwsCliConfigFile sut;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		sut = new AwsCliConfigFile(new File("./src/test/resources/sample_config"));
 	}
